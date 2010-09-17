@@ -142,6 +142,13 @@ cp contrib/redhat/mysql.conf $RPM_BUILD_ROOT/etc/collectd.d/mysql.conf
 cp contrib/redhat/nginx.conf $RPM_BUILD_ROOT/etc/collectd.d/nginx.conf
 cp contrib/redhat/snmp.conf $RPM_BUILD_ROOT/etc/collectd.d/snmp.conf
 
+# *.la files shouldn't be distributed.
+rm -f %{buildroot}/%{_libdir}/{collectd/,}*.la
+
+# Remove Perl hidden .packlist files.
+find %{buildroot} -name .packlist -exec rm {} \;
+
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -185,13 +192,10 @@ exit 0
 
 # macro to grab binaries for a plugin, given a name
 %define plugin_macro() \
-%attr(0644,root,root) %{_libdir}/%{name}/%1.so* \
-#%attr(0644,root,root) %{_libdir}/%{name}/%1.a \
-#%attr(0644,root,root) %{_libdir}/%{name}/%1.la
+%attr(0644,root,root) %{_libdir}/%{name}/%1.so 
 
 
 %plugin_macro apcups
-%plugin_macro ascent
 %plugin_macro bind
 %plugin_macro conntrack
 %plugin_macro contextswitch
@@ -199,6 +203,7 @@ exit 0
 %plugin_macro cpu
 %plugin_macro csv
 %plugin_macro curl
+%plugin_macro curl_xml
 %plugin_macro df
 %plugin_macro disk
 %plugin_macro dns
@@ -209,8 +214,10 @@ exit 0
 %plugin_macro fscache
 %plugin_macro hddtemp
 %plugin_macro interface
+%plugin_macro ipmi
 %plugin_macro iptables
 %plugin_macro irq
+%plugin_macro libvirt
 %plugin_macro load
 %plugin_macro logfile
 %plugin_macro madwifi
@@ -231,6 +238,8 @@ exit 0
 %plugin_macro openvpn
 %plugin_macro olsrd
 %plugin_macro perl
+%plugin_macro ping
+%plugin_macro postgresql
 %plugin_macro powerdns
 %plugin_macro processes
 %plugin_macro protocols
@@ -264,10 +273,10 @@ exit 0
 %attr(0644,root,root) %{_datadir}/%{name}/types.db
 
 %exclude %{_libdir}/perl5/5.8.8/%{_arch}-linux-thread-multi/perllocal.pod
-%attr(0644,root,root) %{_libdir}/perl5/site_perl/5.8.8/%{_arch}-linux-thread-multi/auto/Collectd/.packlist
-%attr(0644,root,root) /usr/lib/perl5/site_perl/5.8.8/Collectd.pm
-%attr(0644,root,root) /usr/lib/perl5/site_perl/5.8.8/Collectd/Unixsock.pm
-%attr(0644,root,root) /usr/lib/perl5/site_perl/5.8.8/Collectd/Plugins/OpenVZ.pm
+%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd.pm
+%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Unixsock.pm
+%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Plugins/OpenVZ.pm
+%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Plugins/Monitorus.pm
 %attr(0644,root,root) /usr/share/man/man3/Collectd::Unixsock.3pm.gz
 
 %exclude /usr/share/collectd/postgresql_default.conf
@@ -287,7 +296,7 @@ exit 0
 
 %files email
 %attr(0644,root,root) %{_libdir}/%{name}/email.so*
-%attr(0644,root,root) %{_libdir}/%{name}/email.la
+#%attr(0644,root,root) %{_libdir}/%{name}/email.la
 %config %attr(0644,root,root) /etc/collectd.d/email.conf
 
 %files mysql
@@ -300,7 +309,7 @@ exit 0
 
 %files sensors
 %attr(0644,root,root) %{_libdir}/%{name}/sensors.so*
-%attr(0644,root,root) %{_libdir}/%{name}/sensors.la
+#%attr(0644,root,root) %{_libdir}/%{name}/sensors.la
 %config %attr(0644,root,root) /etc/collectd.d/sensors.conf
 
 %files snmp
