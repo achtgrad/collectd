@@ -9,7 +9,7 @@ Source:		http://collectd.org/files/%{name}-%{version}.tar.gz
 License:	GPL
 Group:		System Environment/Daemons
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildPrereq:	lm_sensors-devel, rrdtool-devel, libpcap-devel, net-snmp-devel, libstatgrab-devel, libxml2-devel, libiptcdata-devel, autoconf, automake, flex, byacc, libtool
+BuildPrereq:	lm_sensors-devel, rrdtool-devel, libpcap-devel, net-snmp-devel, libstatgrab-devel, libxml2-devel, libiptcdata-devel, autoconf, automake, flex, bison, libtool
 # libcurl deps
 BuildPrereq:	curl-devel,libidn-devel,openssl-devel
 Requires:	rrdtool, perl-Regexp-Common, libstatgrab
