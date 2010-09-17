@@ -16,6 +16,7 @@ Requires:	rrdtool, perl-Regexp-Common, libstatgrab
 Packager:	RightScale <support@rightscale.com>
 Vendor:		collectd development team <collectd@verplant.org>
 
+
 %description
 collectd is a small daemon which collects system information periodically and
 provides mechanisms to monitor and store the values in a variety of ways. It
@@ -82,11 +83,33 @@ in an embedded JVM.
 %prep
 rm -rf $RPM_BUILD_ROOT
 %setup
+%patch0 -p0
+
 
 %build
 ./build.sh
+# bug 468067 "pkg-config --libs OpenIPMIpthread" fails
+patch -p0 < collectd-4.6.2-configure-OpenIPMI.patch
 ./configure CFLAGS=-"DLT_LAZY_OR_NOW='RTLD_LAZY|RTLD_GLOBAL'" --prefix=%{_prefix} --sbindir=%{_sbindir} --mandir=%{_mandir} --libdir=%{_libdir} --sysconfdir=%{_sysconfdir} \
     %{!?with_java:"--with-java=$JAVA_HOME --enable-java"} \
+    --disable-ascent \
+    --disable-static \
+    --disable-ipvs \
+    --enable-mysql \
+%ifnarch ppc ppc64 sparc sparc64
+    --enable-sensors \
+%endif
+    --enable-email \
+    --enable-apache \
+    --enable-perl \
+    --enable-unixsock \
+    --enable-ipmi \
+    --enable-postgresql \
+    --enable-iptables \
+    --enable-ping \
+    --with-libiptc \
+    --with-python \
+    --with-perl-bindings=INSTALLDIRS=vendor
     --disable-battery
 make
 
@@ -162,9 +185,10 @@ exit 0
 
 # macro to grab binaries for a plugin, given a name
 %define plugin_macro() \
-%attr(0644,root,root) %{_libdir}/%{name}/%1.a \
 %attr(0644,root,root) %{_libdir}/%{name}/%1.so* \
-%attr(0644,root,root) %{_libdir}/%{name}/%1.la
+#%attr(0644,root,root) %{_libdir}/%{name}/%1.a \
+#%attr(0644,root,root) %{_libdir}/%{name}/%1.la
+
 
 %plugin_macro apcups
 %plugin_macro ascent
