@@ -83,13 +83,13 @@ in an embedded JVM.
 %prep
 rm -rf $RPM_BUILD_ROOT
 %setup
-%patch0 -p0
 
 
 %build
 ./build.sh
 # bug 468067 "pkg-config --libs OpenIPMIpthread" fails
-patch -p0 < collectd-4.6.2-configure-OpenIPMI.patch
+perl -p -i -e "s/OpenIPMIpthread/OpenIPMI/g" configure
+
 ./configure CFLAGS=-"DLT_LAZY_OR_NOW='RTLD_LAZY|RTLD_GLOBAL'" --prefix=%{_prefix} --sbindir=%{_sbindir} --mandir=%{_mandir} --libdir=%{_libdir} --sysconfdir=%{_sysconfdir} \
     %{!?with_java:"--with-java=$JAVA_HOME --enable-java"} \
     --disable-ascent \
@@ -109,7 +109,7 @@ patch -p0 < collectd-4.6.2-configure-OpenIPMI.patch
     --enable-ping \
     --with-libiptc \
     --with-python \
-    --with-perl-bindings=INSTALLDIRS=vendor
+    --with-perl-bindings=INSTALLDIRS=vendor \
     --disable-battery
 make
 
