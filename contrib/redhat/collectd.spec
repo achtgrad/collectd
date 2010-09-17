@@ -3,8 +3,8 @@
 
 Summary:	Statistics collection daemon for filling RRD files.
 Name:		collectd
-Version:	4.9.0
-Release:	1%{?dist}
+Version:	4.10.0sq1
+Release:	7%{?dist}
 Source:		http://collectd.org/files/%{name}-%{version}.tar.gz
 License:	GPL
 Group:		System Environment/Daemons
