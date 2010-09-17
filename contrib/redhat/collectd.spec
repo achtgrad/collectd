@@ -9,7 +9,7 @@ Source:		http://collectd.org/files/%{name}-%{version}.tar.gz
 License:	GPL
 Group:		System Environment/Daemons
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildPrereq:	lm_sensors-devel, rrdtool-devel, libpcap-devel, net-snmp-devel, libstatgrab-devel, libxml2-devel, libiptcdata-devel
+BuildPrereq:	lm_sensors-devel, rrdtool-devel, libpcap-devel, net-snmp-devel, libstatgrab-devel, libxml2-devel, libiptcdata-devel, autoconf, automake, flex, byacc, libtool
 # libcurl deps
 BuildPrereq:	curl-devel,libidn-devel,openssl-devel
 Requires:	rrdtool, perl-Regexp-Common, libstatgrab
@@ -84,6 +84,7 @@ rm -rf $RPM_BUILD_ROOT
 %setup
 
 %build
+./build.sh
 ./configure CFLAGS=-"DLT_LAZY_OR_NOW='RTLD_LAZY|RTLD_GLOBAL'" --prefix=%{_prefix} --sbindir=%{_sbindir} --mandir=%{_mandir} --libdir=%{_libdir} --sysconfdir=%{_sysconfdir} \
     %{!?with_java:"--with-java=$JAVA_HOME --enable-java"} \
     --disable-battery
