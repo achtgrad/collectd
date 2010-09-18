@@ -17,7 +17,7 @@ ARGS=""
 prog="collectdmon"
 CONFIG=/etc/collectd.conf
 COLLECTD=/usr/sbin/collectd
-COLLECTDMONPID=/var/run/collectdmon.pid
+COLLECTDMONPID=/var/run/collectd/collectdmon.pid
 USER="collectd"
 
 if [ -r /etc/default/$prog ]; then
@@ -28,7 +28,7 @@ start () {
 	echo -n $"Starting collectd: "
 	if [ -r "$CONFIG" ]
 	then
-		daemon --user="$USER" $prog -P $COLLECTDMONPID -c $COLLECTD -- -C "$CONFIG"
+		daemon --user="$USER" /usr/sbin/$prog -P $COLLECTDMONPID -c $COLLECTD -- -C "$CONFIG"
 		RETVAL=$?
 		echo
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
