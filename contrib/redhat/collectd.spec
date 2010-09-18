@@ -13,7 +13,7 @@ BuildPrereq:	lm_sensors-devel, rrdtool-devel, libpcap-devel, net-snmp-devel, lib
 # libcurl deps
 BuildPrereq:	curl-devel,libidn-devel,openssl-devel
 Requires:	rrdtool, perl-Regexp-Common, libstatgrab
-Packager:	RightScale <support@rightscale.com>
+Packager:	Sam Quigley <quigley@squareup.com>
 Vendor:		collectd development team <collectd@verplant.org>
 
 
