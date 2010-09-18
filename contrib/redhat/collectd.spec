@@ -33,12 +33,26 @@ Requires:	collectd = %{version}, curl
 %description apache
 This plugin collects data provided by Apache's `mod_status'.
 
+%package dns
+Summary:       DNS traffic analysis module for collectd
+Group:         System Environment/Daemons
+Requires:      collectd = %{version}
+%description dns
+This plugin collects DNS traffic data.
+
 %package email
 Summary:	email-plugin for collectd.
 Group:		System Environment/Daemons
 Requires:	collectd = %{version}, spamassassin
 %description email
 This plugin collects data provided by spamassassin.
+
+%package ipmi
+Summary:       IPMI module for collectd
+Group:         System Environment/Daemons
+Requires:      collectd = %{version}
+%description ipmi
+This plugin for collectd provides IPMI support.
 
 %package mysql
 Summary:	mysql-module for collectd.
@@ -55,6 +69,40 @@ Requires:	collectd = %{version}, curl
 %description nginx
 This plugin gets data provided by nginx.
 
+%package -n perl-Collectd
+Summary:       Perl bindings for collectd
+Group:         System Environment/Daemons
+Requires:      collectd = %{version}
+Requires: perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
+%description -n perl-Collectd
+This package contains Perl bindings and plugin for collectd.
+
+
+%package ping
+Summary:       ping module for collectd
+Group:         System Environment/Daemons
+Requires:      collectd = %{version}
+%description ping
+This plugin for collectd provides network latency statistics.
+
+
+%package postgresql
+Summary:       PostgreSQL module for collectd
+Group:         System Environment/Daemons
+Requires:      collectd = %{version}
+%description postgresql
+PostgreSQL querying plugin. This plugins provides data of issued commands,
+called handlers and database traffic.
+
+
+%package rrdtool
+Summary:       RRDTool module for collectd
+Group:         System Environment/Daemons
+Requires:      collectd = %{version}, rrdtool
+%description rrdtool
+This plugin for collectd provides rrdtool support.
+
+
 %package sensors
 Summary:	libsensors-module for collectd.
 Group:		System Environment/Daemons
@@ -68,6 +116,27 @@ Group:		System Environment/Daemons
 Requires:	collectd = %{version}, net-snmp
 %description snmp
 This plugin for collectd allows querying of network equipment using SNMP.
+
+
+%package web
+Summary:        Contrib web interface to viewing rrd files
+Group:          System Environment/Daemons
+Requires:       collectd = %{version}
+Requires:       collectd-rrdtool = %{version}
+Requires:       perl-HTML-Parser, perl-Regexp-Common, rrdtool-perl, httpd
+%description web
+This package will allow for a simple web interface to view rrd files created by
+collectd.
+
+%ifnarch ppc ppc64 sparc sparc64
+%package virt
+Summary:       Libvirt plugin for collectd
+Group:         System Environment/Daemons
+Requires:      collectd = %{version}
+%description virt
+This plugin collects information from virtualized guests.
+%endif
+
 
 %if %with_java
 %package java
@@ -294,10 +363,15 @@ exit 0
 %config %attr(0644,root,root) /etc/collectd.d/apache.conf
 %plugin_macro apache
 
+%files dns
+%plugin_macro dns
+
 %files email
-%attr(0644,root,root) %{_libdir}/%{name}/email.so*
-#%attr(0644,root,root) %{_libdir}/%{name}/email.la
 %config %attr(0644,root,root) /etc/collectd.d/email.conf
+%plugin_macro email
+
+%files ipmi
+%plugin_macro ipmi
 
 %files mysql
 %config %attr(0644,root,root) /etc/collectd.d/mysql.conf
@@ -307,14 +381,37 @@ exit 0
 %config %attr(0644,root,root) /etc/collectd.d/nginx.conf
 %plugin_macro nginx
 
+%files -n perl-Collectd
+%defattr(-, root, root, -)
+%{_libdir}/collectd/perl.so
+%{perl_vendorlib}/Collectd.pm
+%{perl_vendorlib}/Collectd/
+
+%files ping
+%plugin_macro ping
+
+%files postgresql
+%plugin_macro postgresql
+
+%files rrdtool
+%plugin_macro rrdtool
+
 %files sensors
-%attr(0644,root,root) %{_libdir}/%{name}/sensors.so*
-#%attr(0644,root,root) %{_libdir}/%{name}/sensors.la
 %config %attr(0644,root,root) /etc/collectd.d/sensors.conf
+%plugin_macro sensors
 
 %files snmp
 %attr(0644,root,root) /etc/collectd.d/snmp.conf
 %plugin_macro snmp
+
+%files web
+%attr(0755,root,root) /var/www/cgi-bin/collection.cgi
+
+%ifnarch ppc ppc64 sparc sparc64
+%files virt
+%plugin_macro libvirt
+%endif
+
 
 %changelog
 * Tue Jan 04 2010 Rackspace <stu.hood@rackspace.com> 4.9.0
