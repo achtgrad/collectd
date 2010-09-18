@@ -1,0 +1,28 @@
+HOW TO BUILD THIS PACKAGE:
+
+* create the following directory structure in your home directory:
+
+    rpmbuild/
+        BUILD/
+        RPMS/
+        SOURCES/
+        SPECS/
+
+* if this is your first package building experience, set up your macros:
+
+    echo -e "%_topdir\t$HOME/rpmbuild" >> ~/.rpmmacros
+
+* create a source tarball from the git checkout. note that the name of the
+  tarball is important: it has to match the version specified in the specfile.
+
+     git archive --prefix=collectd-${version}/ HEAD | gzip > ~/rpmbuild/SOURCES/collectd-${version}.tar.gz
+
+* copy the specfile into place
+
+    cp contrib/redhat/collectd.spec ~/rpmbuild/SPECS
+
+* build it!
+
+   rpmbuild -bb ~/rpmbuild/SPECS/collectd.spec
+
+* the final RPM binaries will be in ~/rpmbuild/RPMS
