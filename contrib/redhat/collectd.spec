@@ -183,6 +183,9 @@ perl -p -i -e "s/OpenIPMIpthread/OpenIPMI/g" configure
 make
 
 %install
+%{__rm} -rf contrib/SpamAssassin
+%{__install} -d -m0755 %{buildroot}/%{_datadir}/collectd/collection3/
+
 make install DESTDIR=$RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 mkdir -p $RPM_BUILD_ROOT/var/www/cgi-bin
@@ -217,6 +220,19 @@ rm -f %{buildroot}/%{_libdir}/{collectd/,}*.la
 # Remove Perl hidden .packlist files.
 find %{buildroot} -name .packlist -exec rm {} \;
 
+# Remove Perl temporary file perllocal.pod
+find %{buildroot} -name perllocal.pod -exec rm {} \;
+
+# copy web interface
+cp -ad contrib/collection3/* %{buildroot}/%{_datadir}/collectd/collection3/
+rm -f %{buildroot}/%{_datadir}/collectd/collection3/etc/collection.conf
+ln -s %{_sysconfdir}/collection.conf %{buildroot}/%{_datadir}/collectd/collection3/etc/collection.conf
+chmod +x %{buildroot}/%{_datadir}/collectd/collection3/bin/*.cgi
+
+# Move the Perl examples to a separate directory.
+mkdir perl-examples
+find contrib -name '*.p[lm]' -exec mv {} perl-examples/ \;
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -244,7 +260,6 @@ exit 0
 %doc AUTHORS COPYING ChangeLog INSTALL NEWS README contrib/
 %config %attr(0644,root,root) /etc/collectd.conf
 %attr(0755,root,root) /etc/rc.d/init.d/collectd
-%attr(0755,root,root) /var/www/cgi-bin/collection.cgi
 %attr(0755,root,root) %{_sbindir}/collectd
 %attr(0755,root,root) %{_bindir}/collectd-nagios
 %attr(0755,root,root) %{_sbindir}/collectdmon
@@ -275,18 +290,14 @@ exit 0
 %plugin_macro curl_xml
 %plugin_macro df
 %plugin_macro disk
-%plugin_macro dns
 %plugin_macro entropy
-%plugin_macro email
 %plugin_macro exec
 %plugin_macro filecount
 %plugin_macro fscache
 %plugin_macro hddtemp
 %plugin_macro interface
-%plugin_macro ipmi
 %plugin_macro iptables
 %plugin_macro irq
-%plugin_macro libvirt
 %plugin_macro load
 %plugin_macro logfile
 %plugin_macro madwifi
@@ -306,16 +317,11 @@ exit 0
 %plugin_macro ntpd
 %plugin_macro openvpn
 %plugin_macro olsrd
-%plugin_macro perl
-%plugin_macro ping
-%plugin_macro postgresql
 %plugin_macro powerdns
 %plugin_macro processes
 %plugin_macro protocols
 %plugin_macro python
-%plugin_macro rrdtool
 %plugin_macro serial
-%plugin_macro sensors
 %plugin_macro swap
 %plugin_macro syslog
 %plugin_macro table
@@ -341,12 +347,6 @@ exit 0
 
 %attr(0644,root,root) %{_datadir}/%{name}/types.db
 
-%exclude %{_libdir}/perl5/5.8.8/%{_arch}-linux-thread-multi/perllocal.pod
-%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd.pm
-%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Unixsock.pm
-%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Plugins/OpenVZ.pm
-%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Plugins/Monitorus.pm
-%attr(0644,root,root) /usr/share/man/man3/Collectd::Unixsock.3pm.gz
 
 %exclude /usr/share/collectd/postgresql_default.conf
 
@@ -381,11 +381,16 @@ exit 0
 %config %attr(0644,root,root) /etc/collectd.d/nginx.conf
 %plugin_macro nginx
 
-%files -n perl-Collectd
-%defattr(-, root, root, -)
-%{_libdir}/collectd/perl.so
-%{perl_vendorlib}/Collectd.pm
-%{perl_vendorlib}/Collectd/
+%files -n perl-Collectd 
+%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd.pm
+%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Unixsock.pm
+%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Plugins/OpenVZ.pm
+%attr(0644,root,root) /usr/lib/perl5/vendor_perl/5.8.8/Collectd/Plugins/Monitorus.pm
+%attr(0644,root,root) /usr/share/man/man3/Collectd::Unixsock.3pm.gz
+%doc perl-examples/*
+%doc %{_mandir}/man5/collectd-perl.5*
+%doc %{_mandir}/man3/Collectd::Unixsock.3pm*
+%plugin_macro perl
 
 %files ping
 %plugin_macro ping
@@ -405,6 +410,7 @@ exit 0
 %plugin_macro snmp
 
 %files web
+/usr/share/collectd/collection3
 %attr(0755,root,root) /var/www/cgi-bin/collection.cgi
 
 %ifnarch ppc ppc64 sparc sparc64
@@ -414,6 +420,10 @@ exit 0
 
 
 %changelog
+* Fri Sep 17 2010 Sam Quigley <quigley@squareup.com> 4.10.0
+- Version 4.10.0
+- Lots of misc cleanup
+
 * Tue Jan 04 2010 Rackspace <stu.hood@rackspace.com> 4.9.0
 - New upstream version
 - Changes to support 4.9.0
