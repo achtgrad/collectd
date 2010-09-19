@@ -19,12 +19,18 @@ CONFIG=/etc/collectd.conf
 COLLECTD=/usr/sbin/collectd
 COLLECTDMONPID=/var/run/collectd/collectdmon.pid
 USER="collectd"
+COLLECTDSOCK=/var/run/collectd/collectd.sock
 
 if [ -r /etc/default/$prog ]; then
 	. /etc/default/$prog
 fi
 
 start () {
+  if [ -S $COLLECTDSOCK ] ; then
+    echo -n $"Deleting stale socket"
+    rm $COLLECTDSOCK 
+    echo
+  fi
 	echo -n $"Starting collectd: "
 	if [ -r "$CONFIG" ]
 	then
