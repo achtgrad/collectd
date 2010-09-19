@@ -89,7 +89,6 @@ static int us_open_socket (void)
 	sa.sun_family = AF_UNIX;
 	sstrncpy (sa.sun_path, (sock_file != NULL) ? sock_file : US_DEFAULT_PATH,
 			sizeof (sa.sun_path));
-	/* unlink (sa.sun_path); */
 
 	DEBUG ("unixsock plugin: socket path = %s", sa.sun_path);
 
@@ -97,11 +96,53 @@ static int us_open_socket (void)
 	if (status != 0)
 	{
 		char errbuf[1024];
-		sstrerror (errno, errbuf, sizeof (errbuf));
-		ERROR ("unixsock plugin: bind failed: %s", errbuf);
-		close (sock_fd);
-		sock_fd = -1;
-		return (-1);
+		struct stat statbuf;
+
+		if (errno != EADDRINUSE)
+		{
+		  sstrerror (errno, errbuf, sizeof (errbuf));
+		  ERROR ("unixsock plugin: bind failed: %s", errbuf);
+		  close (sock_fd);
+		  sock_fd = -1;
+		  return (-1);
+		}
+		if (stat(sa.sun_path, &statbuf) == 0)
+		{
+		  if ((statbuf.st_mode & S_IFMT) != S_IFSOCK)
+		  {
+		    ERROR ("unixsock plugin: File %s is in the way. "
+			   "Either remove it or configure a different socket file.", sa.sun_path);
+		    close (sock_fd);
+		    sock_fd = -1;
+		    return (-1);
+		  }
+		}
+		if (connect(sock_fd, (struct sockaddr *) &sa,
+			    sizeof(struct sockaddr_un)) >= 0)
+		{
+		  ERROR ("unixsock plugin: Socket file %s is in use by another process.", sa.sun_path);
+		  close (sock_fd);
+		  sock_fd = -1;
+		  return (-1);
+		}
+		WARNING ("unixsock plugin: Removing stale socket file %s", sa.sun_path);
+		if (unlink(sa.sun_path) == -1)
+		{
+		  sstrerror (errno, errbuf, sizeof (errbuf));
+		  ERROR ("unixsock plugin: Could not remove socket file %s", sa.sun_path);
+		  close (sock_fd);
+		  sock_fd = -1;
+		  return (-1);
+		}
+		status = bind (sock_fd, (struct sockaddr *) &sa, sizeof (sa));
+		if (status != 0)
+		{
+		  sstrerror (errno, errbuf, sizeof (errbuf));
+		  ERROR ("unixsock plugin: bind failed after unlink stale socket: %s", errbuf);
+		  close (sock_fd);
+		  sock_fd = -1;
+		  return (-1);
+		}
 	}
 
 	chmod (sa.sun_path, sock_perms);
