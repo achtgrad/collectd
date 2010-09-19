@@ -4,7 +4,7 @@
 Summary:	Statistics collection daemon for filling RRD files.
 Name:		collectd
 Version:	4.10.1sq1
-Release:	2%{?dist}
+Release:	3%{?dist}
 Source:		http://collectd.org/files/%{name}-%{version}.tar.gz
 License:	GPL
 Group:		System Environment/Daemons
@@ -420,10 +420,13 @@ exit 0
 
 
 %changelog
-* Fri Sep 17 2010 Sam Quigley <quigley@squareup.com> 4.10.0
+* Sun Sep 19 2010 Sam Quigley <quigley@squareup.com> 4.10.1
+- Replace initscript change with a real patch from collectd mailing list.
+
+* Sun Sep 19 2010 Sam Quigley <quigley@squareup.com> 4.10.1
 - Change initscript to delete unix socket (if present)
 
-* Fri Sep 17 2010 Sam Quigley <quigley@squareup.com> 4.10.0
+* Fri Sep 17 2010 Sam Quigley <quigley@squareup.com> 4.10.1
 - Version 4.10.1
 - Lots of misc cleanup
 
