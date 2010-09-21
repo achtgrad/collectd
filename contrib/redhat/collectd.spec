@@ -272,9 +272,15 @@ done
 # *.la files shouldn't be distributed.
 rm -f %{buildroot}/%{_libdir}/{collectd/,}*.la
 
+%pre
+if [ $1 -eq 0 ]; then
+  # there's already a copy of this installed: stop it
+  [ -x /etc/init.d/collectd ] && /etc/init.d/collectd stop
+fi
 
 %post
 /sbin/chkconfig --add collectd
+/etc/init.d/collectd start
 
 
 %preun
