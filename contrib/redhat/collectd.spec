@@ -1,7 +1,7 @@
 Summary: Statistics collection daemon for filling RRD files
 Name: collectd
 Version: 4.10.1sq1
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 Group: System Environment/Daemons
 URL: http://collectd.org/
@@ -474,7 +474,7 @@ fi
 
 %files postgresql
 %defattr(-, root, root, -)
-%{_libdir}/collectd/postgresql.so
+%{_libdir}/collectd/postgresql.so21
 %config(noreplace) %{_sysconfdir}/collectd.d/postgresql.conf
 %doc src/postgresql_default.conf
 
@@ -513,6 +513,9 @@ fi
 %endif
 
 %changelog
+* Mon Sep 21 2010 Sam Quigley <quigley@squareup.com> 4.10.1
+- Replace initscript change with a real patch from collectd mailing list.
+
 * Sun Sep 19 2010 Sam Quigley <quigley@squareup.com> 4.10.1
 - Replace initscript change with a real patch from collectd mailing list.
 
