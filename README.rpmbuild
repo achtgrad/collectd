@@ -7,6 +7,7 @@ HOW TO BUILD THIS PACKAGE:
         RPMS/
         SOURCES/
         SPECS/
+        SRPMS/
 
 * if this is your first package building experience, set up your macros:
 
