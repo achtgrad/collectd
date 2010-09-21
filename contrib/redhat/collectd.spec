@@ -474,7 +474,7 @@ fi
 
 %files postgresql
 %defattr(-, root, root, -)
-%{_libdir}/collectd/postgresql.so21
+%{_libdir}/collectd/postgresql.so
 %config(noreplace) %{_sysconfdir}/collectd.d/postgresql.conf
 %doc src/postgresql_default.conf
 
