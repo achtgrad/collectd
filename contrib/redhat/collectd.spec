@@ -8,7 +8,7 @@ URL: http://collectd.org/
 Packager:	Sam Quigley <quigley@squareup.com>
 Vendor:		collectd development team <collectd@verplant.org>
 
-Source: http://collectd.org/files/%{name}-%{version}.tar.bz2
+Source: http://collectd.org/files/%{name}-%{version}.tar.gz
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -36,7 +36,6 @@ BuildRequires: postgresql-devel
 BuildRequires: liboping-devel
 BuildRequires: python-devel
 BuildRequires: libstatgrab-devel
-BuildRequires: libiptc-devel
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: flex
@@ -241,8 +240,6 @@ find %{buildroot} -name perllocal.pod -exec rm {} \;
 # copy web interface
 cp -ad contrib/collection3/* %{buildroot}/%{_datadir}/collectd/collection3/
 rm -f %{buildroot}/%{_datadir}/collectd/collection3/etc/collection.conf
-cp %{SOURCE1} %{buildroot}/%{_sysconfdir}/httpd/conf.d/collectd.conf
-cp %{SOURCE2} %{buildroot}%{_sysconfdir}/collection.conf
 ln -s %{_sysconfdir}/collection.conf %{buildroot}/%{_datadir}/collectd/collection3/etc/collection.conf
 chmod +x %{buildroot}/%{_datadir}/collectd/collection3/bin/*.cgi
 
@@ -499,8 +496,8 @@ fi
 %files web
 %defattr(-, root, root, -)
 %{_datadir}/collectd/collection3/
-%config(noreplace) %{_sysconfdir}/httpd/conf.d/collectd.conf
-%config(noreplace) %{_sysconfdir}/collection.conf
+# %config(noreplace) %{_sysconfdir}/httpd/conf.d/collectd.conf
+# %config(noreplace) %{_sysconfdir}/collection.conf
 
 %ifnarch ppc ppc64 sparc sparc64
 %files virt
