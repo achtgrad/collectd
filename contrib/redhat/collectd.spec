@@ -219,7 +219,7 @@ sed -i.orig -e 's|-Werror||g' Makefile.in */Makefile.in
 %{__make} install DESTDIR="%{buildroot}"
 
 %{__install} -Dp -m0644 src/collectd.conf %{buildroot}%{_sysconfdir}/collectd.conf
-%{__install} -Dp -m0755 contrib/fedora/init.d-collectd %{buildroot}%{_initrddir}/collectd
+%{__install} -Dp -m0755 contrib/redhat/init.d-collectd %{buildroot}%{_initrddir}/collectd
 
 %{__install} -d -m0755 %{buildroot}%{_localstatedir}/lib/collectd/
 %{__install} -d -m0755 %{buildroot}/%{_datadir}/collectd/collection3/
