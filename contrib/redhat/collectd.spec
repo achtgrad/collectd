@@ -273,7 +273,7 @@ done
 rm -f %{buildroot}/%{_libdir}/{collectd/,}*.la
 
 %pre
-if [ $1 -eq 0 ]; then
+if [ $1 -gt 1 ]; then
   # there's already a copy of this installed: stop it
   [ -x /etc/init.d/collectd ] && /etc/init.d/collectd stop
 fi
