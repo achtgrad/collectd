@@ -1,9 +1,6 @@
-
-%define with_java %(test -z "$JAVA_HOME" ; echo $?)
-
 Summary:	Statistics collection daemon for filling RRD files.
 Name:		collectd
-Version:	4.9.0
+Version:	4.10.1.40.g537181e
 Release:	1%{?dist}
 Source:		http://collectd.org/files/%{name}-%{version}.tar.gz
 License:	GPL
@@ -68,24 +65,23 @@ Requires:	collectd = %{version}, net-snmp
 %description snmp
 This plugin for collectd allows querying of network equipment using SNMP.
 
-%if %with_java
 %package java
 Summary:	java-module for collectd.
 Group:		System Environment/Daemons
-Requires:	collectd = %{version}, jdk >= 1.6
-BuildPrereq:	jdk >= 1.6
+Requires:	collectd = %{version}, java-1.6.0-openjdk-devel >= 1.6
+BuildPrereq:	java-1.6.0-openjdk-devel >= 1.6
 %description java
 This plugin for collectd allows plugins to be written in Java and executed
 in an embedded JVM.
-%endif
 
 %prep
 rm -rf $RPM_BUILD_ROOT
 %setup
 
 %build
+./build.sh
 ./configure CFLAGS=-"DLT_LAZY_OR_NOW='RTLD_LAZY|RTLD_GLOBAL'" --prefix=%{_prefix} --sbindir=%{_sbindir} --mandir=%{_mandir} --libdir=%{_libdir} --sysconfdir=%{_sysconfdir} \
-    %{!?with_java:"--with-java=$JAVA_HOME --enable-java"} \
+    --with-java=$JAVA_HOME --enable-java \
     --disable-battery
 make
 
@@ -161,7 +157,7 @@ exit 0
 
 # macro to grab binaries for a plugin, given a name
 %define plugin_macro() \
-%attr(0644,root,root) %{_libdir}/%{name}/%1.a \
+#%attr(0644,root,root) %{_libdir}/%{name}/%1.a \
 %attr(0644,root,root) %{_libdir}/%{name}/%1.so* \
 %attr(0644,root,root) %{_libdir}/%{name}/%1.la
 
@@ -174,6 +170,7 @@ exit 0
 %plugin_macro cpu
 %plugin_macro csv
 %plugin_macro curl
+%plugin_macro curl_xml
 %plugin_macro df
 %plugin_macro disk
 %plugin_macro dns
@@ -244,17 +241,15 @@ exit 0
 %attr(0644,root,root) /usr/lib/perl5/site_perl/5.8.8/Collectd/Unixsock.pm
 %attr(0644,root,root) /usr/lib/perl5/site_perl/5.8.8/Collectd/Plugins/OpenVZ.pm
 %attr(0644,root,root) /usr/share/man/man3/Collectd::Unixsock.3pm.gz
+%attr(0644,root,root) /usr/lib/perl5/site_perl/5.8.8/Collectd/Plugins/Monitorus.pm
 
 %exclude /usr/share/collectd/postgresql_default.conf
 
 %dir /var/lib/collectd
 
-%if %with_java
 %files java
-%attr(0644,root,root) /usr/share/%{name}/java/org/collectd/api/*.class
-%attr(0644,root,root) /usr/share/%{name}/java/org/collectd/java/*.class
+%attr(0644,root,root) /usr/share/%{name}/java/*.jar
 %plugin_macro java
-%endif
 
 %files apache
 %config %attr(0644,root,root) /etc/collectd.d/apache.conf
