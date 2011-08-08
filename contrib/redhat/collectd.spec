@@ -6,7 +6,7 @@ Source:		http://collectd.org/files/%{name}-%{version}.tar.gz
 License:	GPL
 Group:		System Environment/Daemons
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildPrereq:	lm_sensors-devel, rrdtool-devel, libpcap-devel, net-snmp-devel, libstatgrab-devel, libxml2-devel, libiptcdata-devel
+BuildPrereq:	lm_sensors-devel, rrdtool-devel, libpcap-devel, net-snmp-devel, libstatgrab-devel, libxml2-devel, libiptcdata-devel, python-devel, mysql-devel, libgcrypt-devel
 # libcurl deps
 BuildPrereq:	curl-devel,libidn-devel,openssl-devel
 Requires:	rrdtool, perl-Regexp-Common, libstatgrab
@@ -147,6 +147,7 @@ exit 0
 %attr(0644,root,root) %{_mandir}/man1/*
 %attr(0644,root,root) %{_mandir}/man5/*
 %dir /etc/collectd.d
+%attr(0755,root,root) %{_bindir}/collectdctl
 
 # client
 %attr(0644,root,root) /usr/include/collectd/client.h
@@ -219,6 +220,7 @@ exit 0
 %plugin_macro target_replace
 %plugin_macro target_scale
 %plugin_macro target_set
+%plugin_macro target_v5upgrade
 
 %plugin_macro tcpconns
 %plugin_macro teamspeak2
